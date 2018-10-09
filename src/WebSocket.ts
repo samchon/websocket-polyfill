@@ -63,9 +63,33 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 
 	/* ================================================================
 		ACCESSORS
+			- SENDER
 			- PROPERTIES
 			- LISTENERS
 	===================================================================
+		SENDER
+	---------------------------------------------------------------- */
+	public send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void
+	{
+		if (typeof data.valueOf() === "string")
+			this.connection_.sendUTF(data);
+		else
+		{
+			let buffer: Buffer;
+			if (data instanceof Buffer)
+				buffer = data;
+			else if (data instanceof Blob)
+				buffer = new Buffer(<any>data, "blob");
+			else if ((data as ArrayBufferView).buffer)
+				buffer = new Buffer((data as ArrayBufferView).buffer);
+			else
+				buffer = new Buffer(data as ArrayBufferLike);
+
+			this.connection_.sendBytes(buffer);
+		}
+	}
+
+	/* ----------------------------------------------------------------
 		PROPERTIES
 	---------------------------------------------------------------- */
 	public get url(): string
@@ -90,8 +114,6 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 	public get readyState()
 	{
 		let state: string = this.connection_.state;
-		console.log(state);
-
 		return state;
 	}
 
@@ -212,6 +234,5 @@ type Labmda<T> = { [P in keyof T]: (event: T[P]) => void; }
 const EVENT_INIT: EventInit = 
 {
 	bubbles: false,
-	cancelable: false,
-	composed: false
+	cancelable: false
 };

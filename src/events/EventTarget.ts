@@ -32,6 +32,8 @@ export class EventTarget<Types extends object = {}>
 		(event as any).target = this;
 		(event as any).timeStamp = new Date().getTime() - this.created_at_.getTime();
 
+		console.log("dispatchEvent", event.type, typeof event.target);
+
 		// CALL THE LISTENERS
 		for (let listener of it.second)
 			listener(event);

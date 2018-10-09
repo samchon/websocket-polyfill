@@ -2,14 +2,10 @@ import "../index";
 
 function handle_event(type: string, event: Event): void
 {
-	if (!event)
-	{
-		console.log(type, "is undefined");
-		return;
-	}
+	if (type === "open")
+		(event.target as WebSocket).send("Hello, I'm a client.");
 
-	delete (<any>event).target;
-	console.log(type, event);
+	console.log(type, (<any>event).data);
 }
 
 async function main(): Promise<void>
@@ -17,8 +13,6 @@ async function main(): Promise<void>
 	try
 	{
 		let ws: WebSocket = new WebSocket("ws://127.0.0.1:37800/studies/massive");
-
-		ws.onopen = handle_event.bind(null, "open");
 		for (let type of ["open", "close", "error", "message"])
 			ws.addEventListener(<any>type, (event: Event) =>
 			{

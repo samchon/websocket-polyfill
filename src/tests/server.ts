@@ -9,10 +9,14 @@ async function main(): Promise<void>
 	let wServer = new ws.server({ httpServer: server });
 	wServer.on("request", request =>
 	{
-		console.log(request.resource, request.origin);
+		console.log("A client has connected", request.resource, request.origin);
 
 		let connection = request.accept("", request.origin);
-		connection.sendUTF("Hello Newbie!");
+		connection.on("message", data =>
+		{
+			console.log("Message from client", data);
+		});
+		connection.sendUTF("Hello Newbie! I'm a server");
 		connection.close();
 
 		server.close();
