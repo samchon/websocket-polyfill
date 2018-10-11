@@ -6,7 +6,7 @@
     "email": "samchon@samchon.org",
     "url": "http://samchon.org"
   },
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
@@ -14,7 +14,7 @@
     "test": "node lib/tests/main"
   },
   "dependencies": {
-    "tstl": "^2.0.6",
+    "tstl": "^2.0.7",
     "websocket": "^1.0.28"
   },
   "devDependencies": {

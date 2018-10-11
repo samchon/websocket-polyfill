@@ -27,13 +27,20 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 	 */
 	private on_: Partial<Labmda<WebSocketEventMap>>;
 
+	/**
+	 * @hidden
+	 */
+	private state_: number;
+
 	/* ----------------------------------------------------------------
 		CONSTRUCTORS
 	---------------------------------------------------------------- */
 	public constructor(url: string, protocols?: string | string[])
 	{
 		super();
+
 		this.on_ = {};
+		this.state_ = WebSocket.CONNECTING;
 
 		//----
 		// CLIENT
@@ -55,6 +62,7 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 
 	public close(code?: number, reason?: string): void
 	{
+		this.state_ = WebSocket.CLOSING;
 		if (code === undefined)
 			this.connection_.sendCloseFrame();
 		else
@@ -111,10 +119,19 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 			: "";
 	}
 
-	public get readyState()
+	public get readyState(): number
 	{
-		let state: string = this.connection_.state;
-		return state;
+		return this.state_;
+	}
+
+	public get bufferedAmount(): number
+	{
+		return this.connection_.bytesWaitingToFlush;
+	}
+
+	public get binaryType(): string
+	{
+		return "arraybuffer";
 	}
 
 	/* ----------------------------------------------------------------
@@ -176,6 +193,8 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 	private _Handle_connect(connection: Connection): void
 	{
 		this.connection_ = connection;
+		this.state_ = WebSocket.OPEN;
+
 		this.connection_.on("message", this._Handle_message.bind(this));
 		this.connection_.on("error", this._Handle_error.bind(this));
 		this.connection_.on("close", this._Handle_close.bind(this));
@@ -195,6 +214,8 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 			code: code, 
 			reason: reason
 		});
+
+		this.state_ = WebSocket.CLOSED;
 		this.dispatchEvent(event);
 	}
 
@@ -224,8 +245,19 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 			error: error,
 			message: error.message
 		});
+		if (this.state_ === WebSocket.CONNECTING)
+			this.state_ = WebSocket.CLOSED;
+
 		this.dispatchEvent(event);
 	}
+}
+
+export namespace WebSocket
+{
+	export const CONNECTING = 0;
+	export const OPEN = 1;
+	export const CLOSING = 2;
+	export const CLOSED = 3;
 }
 
 type Listener<K extends keyof WebSocketEventMap> = (event: WebSocketEventMap[K]) => void;
