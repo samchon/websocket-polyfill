@@ -63,10 +63,12 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 	public close(code?: number, reason?: string): void
 	{
 		this.state_ = WebSocket.CLOSING;
-		if (code === undefined)
-			this.connection_.sendCloseFrame();
-		else
-			this.connection_.sendCloseFrame(code, reason, true);
+		if (this.connection_) {
+			if (code === undefined)
+				this.connection_.sendCloseFrame();
+			else
+				this.connection_.sendCloseFrame(code, reason, true);
+		}
 	}
 
 	/* ================================================================
@@ -175,7 +177,7 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 	 * @hidden
 	 */
 	private _Set_on<K extends keyof WebSocketEventMap>
-		(type: K, listener: Listener<K>): void
+		(type: K, listener: Labmda<WebSocketEventMap>[K]): void
 	{
 		if (this.on_[type])
 			this.removeEventListener(type, <any>this.on_[type]);
