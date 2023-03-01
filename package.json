@@ -6,20 +6,17 @@
     "email": "samchon@samchon.org",
     "url": "http://samchon.org"
   },
-  "version": "0.0.3",
-  "main": "lib/index.js",
-  "typings": "lib/index.d.ts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "browser": "browser.js",
   "scripts": {
-    "build": "tsc",
-    "test": "node lib/tests/main"
+    "test": "node test.js"
   },
   "dependencies": {
-    "tstl": "^2.2.3",
-    "websocket": "^1.0.28"
+    "websocket": "^1.0.34"
   },
   "devDependencies": {
-    "@types/node": "^10.11.4",
-    "@types/websocket": "0.0.40"
+    "@types/node": "^10.11.4"
   },
   "homepage": "https://github.com/samchon/websocket-polyfill#readme",
   "repository": {
