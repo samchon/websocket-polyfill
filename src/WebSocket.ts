@@ -181,7 +181,7 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 			this.removeEventListener(type, <any>this.on_[type]);
 		
 		this.addEventListener(type, <any>listener);
-		this.on_[type] = listener;
+		this.on_[type] = <any>listener;
 	}
 
 	/* ----------------------------------------------------------------
