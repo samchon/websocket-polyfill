@@ -77,10 +77,7 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 	public close(code?: number, reason?: string): void
 	{
 		this.state_ = WebSocket.CLOSING;
-		if (code === undefined)
-			this.connection_.sendCloseFrame();
-		else
-			this.connection_.sendCloseFrame(code, reason, true);
+		this.connection_.sendCloseFrame(code, reason);
 	}
 
 	/* ================================================================
