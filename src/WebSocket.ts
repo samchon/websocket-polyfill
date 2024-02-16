@@ -1,7 +1,7 @@
 import { 
 	client as Client, 
 	connection as Connection,
-	IMessage
+  Message
 } from "websocket";
 
 import { EventTarget } from "./events/EventTarget";
@@ -32,6 +32,17 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 	 */
 	private state_: number;
 
+	/**
+	 * @hidden
+	 */
+	private url_: string;
+	
+	/**
+	 * @hidden
+	 */
+	private protocol_: string;
+	
+
 	/* ----------------------------------------------------------------
 		CONSTRUCTORS
 	---------------------------------------------------------------- */
@@ -53,6 +64,9 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 		if (typeof protocols === "string")
 			protocols = [protocols];
 
+		this.url_ = url;
+		this.protocol_ = protocols[0];
+
 		// DO CONNECT
 		this.client_.connect(
 			url, 
@@ -63,10 +77,7 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 	public close(code?: number, reason?: string): void
 	{
 		this.state_ = WebSocket.CLOSING;
-		if (code === undefined)
-			this.connection_.sendCloseFrame();
-		else
-			this.connection_.sendCloseFrame(code, reason, true);
+		this.connection_.sendCloseFrame(code, reason);
 	}
 
 	/* ================================================================
@@ -102,14 +113,12 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 	---------------------------------------------------------------- */
 	public get url(): string
 	{
-		return this.client_.url.href;
+		return this.url_
 	}
 
 	public get protocol(): string
 	{
-		return this.client_.protocols
-			? this.client_.protocols[0]
-			: "";
+		return this.protocol_
 	}
 
 	public get extensions(): string
@@ -181,7 +190,7 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 			this.removeEventListener(type, <any>this.on_[type]);
 		
 		this.addEventListener(type, <any>listener);
-		this.on_[type] = listener;
+		this.on_[type] = <any>listener;
 	}
 
 	/* ----------------------------------------------------------------
@@ -222,12 +231,12 @@ export class WebSocket extends EventTarget<WebSocketEventMap>
 	/**
 	 * @hidden
 	 */
-	private _Handle_message(message: IMessage): void
+	private _Handle_message(message: Message): void
 	{
 		let event: MessageEvent = new MessageEvent("message",
 		{
 			...EVENT_INIT,
-			data: message.binaryData 
+			data: message.type === 'binary'
 				? message.binaryData 
 				: message.utf8Data
 		})

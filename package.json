@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@types/node": "^10.11.4",
-    "@types/websocket": "0.0.40"
+    "@types/websocket": "^1.0.10"
   },
   "homepage": "https://github.com/samchon/websocket-polyfill#readme",
   "repository": {
